@@ -3,7 +3,6 @@ package dalle_cli
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -38,14 +37,14 @@ const (
 
 type GenerateRequest struct {
 	Prompt         string  `json:"prompt"`
-	N              *int    `json:"n,omitempty"`
+	N              int     `json:"n,omitempty"`
 	Size           *string `json:"size,omitempty"`
 	ResponseFormat *string `json:"response_format,omitempty"`
 	User           *string `json:"user,omitempty"`
 }
 
 type Client interface {
-	Generate(prompt string, size *int, n *int, user *string, responseType *string) ([]Datum, error)
+	Generate(prompt string, size int, n int, user *string, responseType *string) ([]Datum, error)
 }
 
 type client struct {
@@ -81,14 +80,10 @@ func pointerizeString(s string) *string {
 // N is the number of images to generate.
 //
 // https://beta.openai.com/docs/guides/images/usage
-func (c *client) Generate(prompt string, size *int, n *int, user *string, responseType *string) ([]Datum, error) {
+func (c *client) Generate(prompt string, size int, n int, user *string, responseType *string) ([]Datum, error) {
 	url := c.baseURL + "/generations"
 
 	var sizeStr *string
-
-	if size != nil {
-		sizeStr = pointerizeString(fmt.Sprintf("%dx%d", size, size))
-	}
 
 	body := GenerateRequest{
 		Prompt:         prompt,
